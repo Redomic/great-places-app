@@ -22,24 +22,30 @@ class PlacesListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<Places>(
-        builder: (ctx, places, ch) => places.items.length <= 0
-            ? ch as Widget
-            : ListView.builder(
-                itemBuilder: (ctx, index) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: FileImage(
-                      places.items[index].image,
+      body: FutureBuilder(
+        future: Provider.of<Places>(context, listen: false).fetchAndSetPlaces(),
+        builder: (ctx, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? Center(child: CircularProgressIndicator())
+                : Consumer<Places>(
+                    builder: (ctx, places, ch) => places.items.length <= 0
+                        ? ch as Widget
+                        : ListView.builder(
+                            itemBuilder: (ctx, index) => ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: FileImage(
+                                  places.items[index].image,
+                                ),
+                              ),
+                              title: Text(places.items[index].title),
+                              onTap: () {},
+                            ),
+                            itemCount: places.items.length,
+                          ),
+                    child: Center(
+                      child: Text('Got no places yet'),
                     ),
                   ),
-                  title: Text(places.items[index].title),
-                  onTap: () {},
-                ),
-                itemCount: places.items.length,
-              ),
-        child: Center(
-          child: Text('Got no places yet'),
-        ),
       ),
     );
   }
